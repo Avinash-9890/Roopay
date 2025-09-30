@@ -17,6 +17,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Roopay">
         <activity
+            android:name=".ActivationActivity"
+            android:exported="false" />
+        <activity
             android:name=".ApiResponseActivity"
             android:exported="false" />
         <activity

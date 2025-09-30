@@ -158,13 +158,85 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
         itemActivate.findViewById<TextView>(R.id.iconLabel).text = "Activate"
 
         itemActivate.setOnClickListener {
-            callActivationApi()
+            val intent = Intent(this, ActivationActivity::class.java)
+            startActivity(intent)
         }
+
 
         // ✅ Razorpay Payment on Payout Click
         itemPayout.setOnClickListener {
             showAmountDialogAndPay()
         }
+    }
+
+    /** ✅ Show Dialog for Activation API */
+    @SuppressLint("MissingInflatedId")
+    private fun showActivationDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_activation, null)
+
+        val etMemberId = dialogView.findViewById<EditText>(R.id.etmemberId)
+        val etPassword = dialogView.findViewById<EditText>(R.id.etPassword)
+        val etPin = dialogView.findViewById<EditText>(R.id.etpin)
+        val etNumber = dialogView.findViewById<EditText>(R.id.etnumber)
+
+        AlertDialog.Builder(this)
+            .setTitle("Enter Activation Details")
+            .setView(dialogView)
+            .setPositiveButton("Submit") { _, _ ->
+                val memberId = etMemberId.text.toString().trim()
+                val apiPassword = etPassword.text.toString().trim()
+                val apiPin = etPin.text.toString().trim()
+                val number = etNumber.text.toString().trim()
+
+                if (memberId.isEmpty() || apiPassword.isEmpty() || apiPin.isEmpty() || number.isEmpty()) {
+                    Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
+                } else {
+                    callActivationApi(memberId, apiPassword, apiPin, number)
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    /** ✅ Call Activation API with user input */
+    private fun callActivationApi(memberId: String, apiPassword: String, apiPin: String, number: String) {
+        val requestData = ModelClass(memberId, apiPassword, apiPin, number)
+
+        val call = RetrofitClient.instance.postActivationData(requestData)
+
+        call.enqueue(object : retrofit2.Callback<ModelClass> {
+            override fun onResponse(
+                call: retrofit2.Call<ModelClass>,
+                response: retrofit2.Response<ModelClass>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    val data = response.body()!!
+                    Log.d("API_RESPONSE", "✅ Success: $data")
+
+                    val gson = com.google.gson.GsonBuilder().setPrettyPrinting().create()
+                    val fullJson = gson.toJson(data)
+
+                    val intent = Intent(this@MainActivity, ApiResponseActivity::class.java)
+                    intent.putExtra("api_response", fullJson)
+                    startActivity(intent)
+
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("API_RESPONSE", "❌ Server Error: ${response.code()} | Body: $errorBody")
+
+                    val intent = Intent(this@MainActivity, ApiResponseActivity::class.java)
+                    intent.putExtra("api_response", "Server Error: ${response.code()}\n\n$errorBody")
+                    startActivity(intent)
+                }
+            }
+
+            override fun onFailure(call: retrofit2.Call<ModelClass>, t: Throwable) {
+                Log.e("API_RESPONSE", "❌ Network Error", t)
+                val intent = Intent(this@MainActivity, ApiResponseActivity::class.java)
+                intent.putExtra("api_response", "Network Error: ${t.localizedMessage ?: "Unknown error"}")
+                startActivity(intent)
+            }
+        })
     }
 
     /** ✅ Show Dialog to Enter Amount */
@@ -195,13 +267,9 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
         Log.d("RAZORPAY", "🟢 Starting Razorpay Payment...")
 
         val checkout = Checkout()
-
-        // ❗ FIXED: You must only use KeyID here, not KeySecret
-        checkout.setKeyID("rzp_test_RNH706CURjoNRd")
-        Log.d("RAZORPAY", "🔑 KeyID set: rzp_test_RNH706CURjoNRd")
+        checkout.setKeyID("rzp_test_RNH706CURjoNRd") // KeyID only
 
         val amountInPaise = (amountInRupees * 100).toInt()
-        Log.d("RAZORPAY", "💰 Amount in paise: $amountInPaise")
 
         try {
             val options = JSONObject()
@@ -215,10 +283,7 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
             prefill.put("contact", "9999999999")
             options.put("prefill", prefill)
 
-            Log.d("RAZORPAY", "📦 Checkout Options JSON: $options")
-
             checkout.open(this, options)
-            Log.d("RAZORPAY", "🚀 Checkout opened successfully!")
         } catch (e: Exception) {
             Log.e("RAZORPAY", "❌ Error starting Razorpay Checkout", e)
             Toast.makeText(this, "Payment Error: ${e.message}", Toast.LENGTH_LONG).show()
@@ -242,53 +307,6 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
             .setMessage("Error: $response")
             .setPositiveButton("OK", null)
             .show()
-    }
-
-    private fun callActivationApi() {
-        val memberId = "9876543210"
-        val apiPassword = "1234"
-        val apiPin = "1234"
-        val number = "998988200"
-
-        val call = RetrofitClient.instance.getActivationData(memberId, apiPassword, apiPin, number)
-
-        call.enqueue(object : retrofit2.Callback<ModelClass> {
-            override fun onResponse(
-                call: retrofit2.Call<ModelClass>,
-                response: retrofit2.Response<ModelClass>
-            ) {
-                if (response.isSuccessful && response.body() != null) {
-                    val data = response.body()!!
-
-                    // Convert full response to string (use Gson if available)
-                    val gson = com.google.gson.GsonBuilder().setPrettyPrinting().create()
-                    val fullJson = gson.toJson(data)
-
-                    Log.d("API_RESPONSE", "✅ Full Response:\n$fullJson")
-
-                    // ✅ Open ApiResponseActivity
-                    val intent = Intent(this@MainActivity, ApiResponseActivity::class.java)
-                    intent.putExtra("api_response", fullJson)
-                    startActivity(intent)
-
-                } else {
-                    val errorBody = response.errorBody()?.string()
-                    Log.e("API_RESPONSE", "❌ Server Error: ${response.code()} | Body: $errorBody")
-
-                    val intent = Intent(this@MainActivity, ApiResponseActivity::class.java)
-                    intent.putExtra("api_response", "Server Error: ${response.code()}\n\n$errorBody")
-                    startActivity(intent)
-                }
-            }
-
-            override fun onFailure(call: retrofit2.Call<ModelClass>, t: Throwable) {
-                Log.e("API_RESPONSE", "❌ Network Error", t)
-                val intent = Intent(this@MainActivity, ApiResponseActivity::class.java)
-                intent.putExtra("api_response", "Network Error: ${t.localizedMessage ?: "Unknown error"}")
-                startActivity(intent)
-            }
-        })
-
     }
 
     private fun setupBankingItems() {

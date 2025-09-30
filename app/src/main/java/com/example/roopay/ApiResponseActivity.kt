@@ -14,15 +14,15 @@ class ApiResponseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_api_response)
+      //  setContentView(R.layout.activity_api_response)
 
-        val textViewResponse = findViewById<TextView>(R.id.textViewResponse)
-        val btnClose = findViewById<Button>(R.id.btnClose)
+       // val textViewResponse = findViewById<TextView>(R.id.textViewResponse)
+       // val btnClose = findViewById<Button>(R.id.btnClose)
 
-        val apiResponse = intent.getStringExtra("api_response") ?: "No Response"
-        textViewResponse.text = apiResponse
+       // val apiResponse = intent.getStringExtra("api_response") ?: "No Response"
+       // textViewResponse.text = apiResponse
 
-        btnClose.setOnClickListener { finish() }
+        //btnClose.setOnClickListener { finish() }
 
     }
 }
