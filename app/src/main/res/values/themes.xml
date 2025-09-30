@@ -1,0 +1,20 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Roopay" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- Primary color for toolbar, buttons -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+
+        <!-- Status bar and some widgets ke liye -->
+         <!--<item name="colorPrimaryDark">@color/colorBackground</item>-->
+
+        <!-- Accent color (FloatingActionButton, checkbox, switch etc.) -->
+        <!-- <item name="colorAccent">@color/colorAccent</item>-->
+
+         <!-- App background -->
+        <!--<item name="android:windowBackground">@color/colorBackground</item>-->
+    </style>
+
+    <style name="Theme.Roopay" parent="Base.Theme.Roopay" />
+</resources>

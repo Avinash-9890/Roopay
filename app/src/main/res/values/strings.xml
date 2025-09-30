@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Roopay</string>
+
+    <string name="icon">Topup</string>
+
+    <string name="razorpay_key">rzp_test_RNH706CURjoNRd,YnqxM228gvy8BCs7KiVmGQnM</string>
+</resources>
