@@ -7,13 +7,15 @@ import android.os.Handler
 import android.os.Looper
 import android.text.InputType
 import android.util.Log
-import android.view.View
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.*
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
@@ -22,6 +24,8 @@ import com.razorpay.Checkout
 import com.razorpay.PaymentResultListener
 import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
 import org.json.JSONObject
+import androidx.appcompat.widget.Toolbar
+
 
 class MainActivity : AppCompatActivity(), PaymentResultListener {
 
@@ -30,6 +34,7 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var runnable: Runnable
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -38,7 +43,7 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
         // ✅ Preload Razorpay
         Checkout.preload(applicationContext)
 
-        // ✅ Drawer + Button Setup
+        // ✅ Drawer setup
         drawerLayout = findViewById(R.id.drawerLayout)
         val navigationView = findViewById<NavigationView>(R.id.navigationView)
         val btnDrawer = findViewById<ImageButton>(R.id.btn1)
@@ -46,25 +51,35 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
         btnDrawer.setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
         }
-        
 
+        // ✅ Bottom Navigation with Fragments
         val bottomnav = findViewById<BottomNavigationView>(R.id.bottomnav)
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+
+
+
+        if (savedInstanceState == null) {
+            loadFragment(HomeFragment()) // Default fragment = Home
+        }
+
         bottomnav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> {
-                    Toast.makeText(this, "Home Clicked", Toast.LENGTH_SHORT).show()
+                    loadFragment(HomeFragment())
                     true
                 }
                 R.id.nav_wallet -> {
-                    Toast.makeText(this, "Search Clicked", Toast.LENGTH_SHORT).show()
+                    loadFragment(SearchFragment())
                     true
                 }
                 R.id.nav_offers -> {
-                    Toast.makeText(this, "Profile Clicked", Toast.LENGTH_SHORT).show()
+                    loadFragment(PersonFragments())
                     true
                 }
                 R.id.nav_profile -> {
-                    Toast.makeText(this, "History Clicked", Toast.LENGTH_SHORT).show()
+                    loadFragment(HistoryFragment())
                     true
                 }
                 else -> false
@@ -73,7 +88,7 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
 
 
 
-        // ✅ Header View - SharedPreferences se data set karo
+        // ✅ Header data in drawer
         val headerView = navigationView.getHeaderView(0)
         val tvUserName = headerView.findViewById<TextView>(R.id.username)
         val tvMobileNumber = headerView.findViewById<TextView>(R.id.usermobile)
@@ -85,7 +100,7 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
         tvUserName.text = savedName
         tvMobileNumber.text = savedMobile
 
-        // ✅ Navigation Drawer item clicks (LOGOUT INCLUDED)
+        // ✅ Drawer item clicks
         navigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.logout -> {
@@ -97,55 +112,46 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
             }
         }
 
-        // ✅ Banner Images
-        val bannerImages = listOf(
-            R.drawable.banner11,
-            R.drawable.banner12,
-            R.drawable.banner13,
-            R.drawable.banner14
-        )
+    }
 
-        // ✅ ViewPager2 + Adapter
-        bannerViewPager = findViewById(R.id.bannerViewPager)
-        bannerViewPager.adapter = BannerAdapter(bannerImages)
-
-        // ✅ Dots Indicator
-        val dotsIndicator = findViewById<WormDotsIndicator>(R.id.dotsIndicator)
-        dotsIndicator.attachTo(bannerViewPager)
-
-        // ✅ Auto Slide ViewPager2
-        runnable = object : Runnable {
-            override fun run() {
-                val nextItem =
-                    if (bannerViewPager.currentItem < bannerImages.size - 1) bannerViewPager.currentItem + 1
-                    else 0
-                bannerViewPager.setCurrentItem(nextItem, true)
-                handler.postDelayed(this, 3000)
-            }
-        }
-        handler.postDelayed(runnable, 3000)
-
-        setupWalletItems()
-        setupBankingItems()
-        setupUtilityItems()
-        setupTravelItems()
+    /** ✅ Fragment Loader */
+    private fun loadFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainer, fragment)
+            .commit()
     }
 
 
-    /** ✅ Custom Logout Dialog */
-    @SuppressLint("MissingInflatedId")
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.toolbar_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_menu -> {
+                Toast.makeText(this, "Notifications clicked", Toast.LENGTH_SHORT).show()
+                true
+            }
+            R.id.action_notification -> {
+                Toast.makeText(this, "Help clicked", Toast.LENGTH_SHORT).show()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    /** ✅ Logout */
     private fun showLogoutDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialoge_logout, null)
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
             .create()
 
-        // ✅ Handle buttons
         dialogView.findViewById<Button>(R.id.btnYes).setOnClickListener {
             dialog.dismiss()
             logoutUser()
         }
-
         dialogView.findViewById<Button>(R.id.btnNo).setOnClickListener {
             dialog.dismiss()
         }
@@ -153,7 +159,6 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
         dialog.show()
     }
 
-    /** ✅ Clear Data + Redirect to SigninActivity */
     private fun logoutUser() {
         val sharedPref = getSharedPreferences("UserData", MODE_PRIVATE)
         sharedPref.edit().clear().apply()
@@ -165,36 +170,85 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
         startActivity(intent)
         finish()
     }
+    fun openPaymentDialog() {
+        showAmountDialogAndPay()
+    }
 
-    /** ✅ Wallet Items Setup + Razorpay Payment on Payout */
-    private fun setupWalletItems() {
-        val itemTopup = findViewById<View>(R.id.itemTopup)
-        val itemPayout = findViewById<View>(R.id.itemPayout)
-        val itemQr = findViewById<View>(R.id.itemQr)
-        val itemActivate = findViewById<View>(R.id.itemActivate)
+    fun startPaymentFromFragment(amount: Double) {
+        startRazorpayPayment(amount)
+    }
 
-        itemTopup.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.topup)
-        itemTopup.findViewById<TextView>(R.id.iconLabel).text = "Topup"
 
-        itemPayout.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.pay)
-        itemPayout.findViewById<TextView>(R.id.iconLabel).text = "Payout"
+    /** ✅ Razorpay Payment */
+    private fun showAmountDialogAndPay() {
+        val input = EditText(this)
+        input.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+        input.hint = "Enter amount (INR)"
 
-        itemQr.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.myqrcode)
-        itemQr.findViewById<TextView>(R.id.iconLabel).text = "My QR"
+        AlertDialog.Builder(this)
+            .setTitle("Enter Amount")
+            .setView(input)
+            .setPositiveButton("Pay") { _, _ ->
+                val amount = input.text.toString().trim().toDoubleOrNull()
+                if (amount == null || amount <= 0) {
+                    Toast.makeText(this, "Enter a valid amount", Toast.LENGTH_SHORT).show()
+                } else {
+                    startRazorpayPayment(amount)
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
 
-        itemActivate.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.activate)
-        itemActivate.findViewById<TextView>(R.id.iconLabel).text = "Activate"
+    private fun startRazorpayPayment(amountInRupees: Double) {
+        val checkout = Checkout()
+        checkout.setKeyID("rzp_test_RNH706CURjoNRd")
+        val amountInPaise = (amountInRupees * 100).toInt()
 
-        itemActivate.setOnClickListener {
-            val intent = Intent(this, ActivationActivity::class.java)
-            startActivity(intent)
+        try {
+            val options = JSONObject()
+            options.put("name", "Roopay")
+            options.put("description", "Wallet Payout")
+            options.put("currency", "INR")
+            options.put("amount", amountInPaise)
+
+            val prefill = JSONObject()
+            prefill.put("email", "user@example.com")
+            prefill.put("contact", "9999999999")
+            options.put("prefill", prefill)
+
+            checkout.open(this, options)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Payment Error: ${e.message}", Toast.LENGTH_LONG).show()
         }
+    }
+
+    /** ✅ Razorpay Callbacks */
+    override fun onPaymentSuccess(razorpayPaymentID: String?) {
+        AlertDialog.Builder(this)
+            .setTitle("Payment Successful ✅")
+            .setMessage("Payment ID: $razorpayPaymentID")
+            .setPositiveButton("OK", null)
+            .show()
+    }
+
+    override fun onPaymentError(code: Int, response: String?) {
+        AlertDialog.Builder(this)
+            .setTitle("Payment Failed ❌")
+            .setMessage("Error: $response")
+            .setPositiveButton("OK", null)
+            .show()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        handler.removeCallbacks(runnable)
+    }
 
 
-        // ✅ Razorpay Payment on Payout Click
-        itemPayout.setOnClickListener {
-            showAmountDialogAndPay()
-        }
+
+    fun openActivationDialoge(){
+        showActivationDialog()
     }
 
     /** ✅ Show Dialog for Activation API */
@@ -226,7 +280,8 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
             .show()
     }
 
-    /** ✅ Call Activation API with user input */
+
+        /** ✅ Call Activation API with user input */
     private fun callActivationApi(memberId: String, apiPassword: String, apiPin: String, number: String) {
         val requestData = ModelClass(memberId, apiPassword, apiPin, number)
 
@@ -265,161 +320,5 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
                 startActivity(intent)
             }
         })
-    }
-
-    /** ✅ Show Dialog to Enter Amount */
-    private fun showAmountDialogAndPay() {
-        val input = EditText(this)
-        input.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
-        input.hint = "Enter amount (INR)"
-
-        AlertDialog.Builder(this)
-            .setTitle("Enter Amount")
-            .setView(input)
-            .setPositiveButton("Pay") { _, _ ->
-                val amount = input.text.toString().trim().toDoubleOrNull()
-                if (amount == null || amount <= 0) {
-                    Log.e("RAZORPAY", "❌ Invalid amount entered: $amount")
-                    Toast.makeText(this, "Enter a valid amount", Toast.LENGTH_SHORT).show()
-                } else {
-                    Log.d("RAZORPAY", "✅ Amount entered: $amount")
-                    startRazorpayPayment(amount)
-                }
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
-    }
-
-    /** ✅ Start Razorpay Checkout */
-    private fun startRazorpayPayment(amountInRupees: Double) {
-        Log.d("RAZORPAY", "🟢 Starting Razorpay Payment...")
-
-        val checkout = Checkout()
-        checkout.setKeyID("rzp_test_RNH706CURjoNRd") // KeyID only
-
-        val amountInPaise = (amountInRupees * 100).toInt()
-
-        try {
-            val options = JSONObject()
-            options.put("name", "Roopay")
-            options.put("description", "Wallet Payout")
-            options.put("currency", "INR")
-            options.put("amount", amountInPaise)
-
-            val prefill = JSONObject()
-            prefill.put("email", "user@example.com")
-            prefill.put("contact", "9999999999")
-            options.put("prefill", prefill)
-
-            checkout.open(this, options)
-        } catch (e: Exception) {
-            Log.e("RAZORPAY", "❌ Error starting Razorpay Checkout", e)
-            Toast.makeText(this, "Payment Error: ${e.message}", Toast.LENGTH_LONG).show()
-        }
-    }
-
-    /** ✅ Razorpay Callbacks */
-    override fun onPaymentSuccess(razorpayPaymentID: String?) {
-        Log.d("RAZORPAY", "✅ Payment Success | PaymentID: $razorpayPaymentID")
-        AlertDialog.Builder(this)
-            .setTitle("Payment Successful ✅")
-            .setMessage("Payment ID: $razorpayPaymentID")
-            .setPositiveButton("OK", null)
-            .show()
-    }
-
-    override fun onPaymentError(code: Int, response: String?) {
-        Log.e("RAZORPAY", "❌ Payment Failed | Code: $code | Response: $response")
-        AlertDialog.Builder(this)
-            .setTitle("Payment Failed ❌")
-            .setMessage("Error: $response")
-            .setPositiveButton("OK", null)
-            .show()
-    }
-
-    private fun setupBankingItems() {
-        val item1 = findViewById<View>(R.id.item1)
-        val item2 = findViewById<View>(R.id.item2)
-        val item3 = findViewById<View>(R.id.item3)
-        val item4 = findViewById<View>(R.id.item4)
-        val item5 = findViewById<View>(R.id.item5)
-        val item6 = findViewById<View>(R.id.item6)
-        val item7 = findViewById<View>(R.id.item7)
-        val item8 = findViewById<View>(R.id.item8)
-
-        item1.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.icon1)
-        item1.findViewById<TextView>(R.id.iconLabel).text = "Bank"
-
-        item2.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.icon2)
-        item2.findViewById<TextView>(R.id.iconLabel).text = "Transfer"
-
-        item3.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.icon3)
-        item3.findViewById<TextView>(R.id.iconLabel).text = "AEPS"
-
-        item4.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.icon4)
-        item4.findViewById<TextView>(R.id.iconLabel).text = "Mini Stmt"
-
-        item5.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.icon5)
-        item5.findViewById<TextView>(R.id.iconLabel).text = "Balance"
-
-        item6.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.icon6)
-        item6.findViewById<TextView>(R.id.iconLabel).text = "PAN Card"
-
-        item7.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.icon7)
-        item7.findViewById<TextView>(R.id.iconLabel).text = "Insurance"
-
-        item8.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.icon8)
-        item8.findViewById<TextView>(R.id.iconLabel).text = "Loan"
-    }
-
-    private fun setupUtilityItems() {
-        val util1 = findViewById<View>(R.id.util1)
-        val util2 = findViewById<View>(R.id.util2)
-        val util3 = findViewById<View>(R.id.util3)
-        val util4 = findViewById<View>(R.id.util4)
-        val util5 = findViewById<View>(R.id.util5)
-        val util6 = findViewById<View>(R.id.util6)
-
-        util1.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.util1)
-        util1.findViewById<TextView>(R.id.iconLabel).text = "Recharge"
-
-        util2.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.util2)
-        util2.findViewById<TextView>(R.id.iconLabel).text = "Electricity"
-
-        util3.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.util3)
-        util3.findViewById<TextView>(R.id.iconLabel).text = "Water"
-
-        util4.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.util4)
-        util4.findViewById<TextView>(R.id.iconLabel).text = "Gas"
-
-        util5.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.util5)
-        util5.findViewById<TextView>(R.id.iconLabel).text = "DTH"
-
-        util6.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.util6)
-        util6.findViewById<TextView>(R.id.iconLabel).text = "FASTag"
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        handler.removeCallbacks(runnable)
-    }
-
-    private fun setupTravelItems() {
-        val itemBus = findViewById<View>(R.id.bus)
-        val itemTrain = findViewById<View>(R.id.train)
-        val itemFlight = findViewById<View>(R.id.flight)
-        val itemHotel = findViewById<View>(R.id.hotel)
-
-        itemBus.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.bus)
-        itemBus.findViewById<TextView>(R.id.iconLabel).text = "Bus Booking"
-
-        itemTrain.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.train)
-        itemTrain.findViewById<TextView>(R.id.iconLabel).text = "Train Booking"
-
-        itemFlight.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.airplane)
-        itemFlight.findViewById<TextView>(R.id.iconLabel).text = "Flight Booking"
-
-        itemHotel.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.hotel)
-        itemHotel.findViewById<TextView>(R.id.iconLabel).text = "Hotel Booking"
     }
 }

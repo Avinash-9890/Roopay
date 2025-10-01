@@ -5,7 +5,9 @@
     android:layout_weight="1"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:clickable="true"
+    android:focusable="true">
 
     <ImageView
         android:id="@+id/iconImage"
@@ -21,5 +23,5 @@
         android:layout_marginTop="4dp"
         android:text="Label"
         android:textSize="12sp"
-        android:textColor="#fff"/>
+        android:textColor="#000"/>
 </LinearLayout>

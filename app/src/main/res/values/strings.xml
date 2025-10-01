@@ -4,4 +4,6 @@
     <string name="icon">Topup</string>
 
     <string name="razorpay_key">rzp_test_RNH706CURjoNRd,YnqxM228gvy8BCs7KiVmGQnM</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

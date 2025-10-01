@@ -15,16 +15,13 @@
         <!-- Toolbar -->
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+            android:layout_height="wrap_content">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="#402C8B"
-                android:theme="@style/Base.Theme.Roopay"
-                app:menu="@menu/toolbar_menu">
+                android:background="#402C8B">
 
                 <ImageButton
                     android:id="@+id/btn1"
@@ -35,349 +32,26 @@
             </androidx.appcompat.widget.Toolbar>
         </com.google.android.material.appbar.AppBarLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="#000000" />
-
-        <!-- ✅ Main Content + BottomNav -->
-        <RelativeLayout
+        <!-- ✅ Fragments Load Here -->
+        <FrameLayout
+            android:id="@+id/fragmentContainer"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_weight="1" />
 
-            <!-- Scrollable Content -->
-            <ScrollView
-                android:id="@+id/scrollView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_above="@id/bottomnav"
-                android:clipToPadding="false"
-                android:fillViewport="true"
-                android:paddingBottom="70dp">
+        <!-- ✅ Bottom Navigation -->
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomnav"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@color/white"
+            app:itemIconTint="@color/black"
+            app:itemTextColor="@color/black"
+            app:itemRippleColor="@color/colorPrimary"
+            app:labelVisibilityMode="labeled"
+            app:itemHorizontalTranslationEnabled="false"
+            app:menu="@menu/bottom_nav_menu" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <!-- 🔵 Wallet Section -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="250dp"
-                        android:background="#402C8B"
-                        android:paddingBottom="60dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="16dp">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:weightSum="2">
-
-                                <LinearLayout
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:background="@drawable/wallet_border"
-                                    android:gravity="center"
-                                    android:orientation="vertical">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:padding="5dp"
-                                        android:text="Roopay Wallet"
-                                        android:textColor="#FFFFFF"
-                                        android:textSize="12sp" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:paddingBottom="10dp"
-                                        android:text="₹ 0"
-                                        android:textColor="#FFFFFF"
-                                        android:textSize="16sp"
-                                        android:textStyle="bold" />
-                                </LinearLayout>
-
-                                <LinearLayout
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="10dp"
-                                    android:layout_weight="1"
-                                    android:background="@drawable/wallet_border"
-                                    android:gravity="center"
-                                    android:orientation="vertical">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:padding="5dp"
-                                        android:text="AEPS Wallet"
-                                        android:textColor="#FFFFFF"
-                                        android:textSize="12sp" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:paddingBottom="10dp"
-                                        android:text="₹ 0"
-                                        android:textColor="#FFFFFF"
-                                        android:textSize="16sp"
-                                        android:textStyle="bold" />
-                                </LinearLayout>
-                            </LinearLayout>
-
-                            <!-- Wallet Actions -->
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="10dp"
-                                android:gravity="center"
-                                android:orientation="horizontal"
-                                android:weightSum="4">
-
-                                <include
-                                    android:id="@+id/itemTopup"
-                                    layout="@layout/icon_label_item" />
-
-                                <include
-                                    android:id="@+id/itemPayout"
-                                    layout="@layout/icon_label_item" />
-
-                                <include
-                                    android:id="@+id/itemQr"
-                                    layout="@layout/icon_label_item" />
-
-                                <include
-                                    android:id="@+id/itemActivate"
-                                    layout="@layout/icon_label_item" />
-                            </LinearLayout>
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <!-- 🔵 Banner Section -->
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="match_parent"
-                        android:layout_height="160dp"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="-80dp"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginBottom="8dp"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="6dp">
-
-                        <androidx.viewpager2.widget.ViewPager2
-                            android:id="@+id/bannerViewPager"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent" />
-                    </androidx.cardview.widget.CardView>
-
-                    <!-- Dots Indicator -->
-                    <com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
-                        android:id="@+id/dotsIndicator"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginBottom="12dp" />
-
-                    <!-- ✅ Main White Content -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@android:color/white"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <!-- Banking Section -->
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Banking"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
-
-                        <androidx.cardview.widget.CardView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:padding="12dp"
-                            app:cardCornerRadius="10dp"
-                            app:cardElevation="3dp">
-
-                            <GridLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:columnCount="4">
-
-                                <include
-                                    android:id="@+id/item1"
-                                    layout="@layout/icon_label_item"
-                                    android:layout_columnWeight="1"/>
-
-                                <include
-                                    android:id="@+id/item2"
-                                    layout="@layout/icon_label_item"
-                                    android:layout_columnWeight="1"/>
-
-                                <include
-                                    android:id="@+id/item3"
-                                    layout="@layout/icon_label_item"
-                                    android:layout_columnWeight="1"/>
-
-                                <include
-                                    android:id="@+id/item4"
-                                    layout="@layout/icon_label_item"
-                                    android:layout_columnWeight="1"/>
-
-                                <include
-                                    android:id="@+id/item5"
-                                    layout="@layout/icon_label_item"
-                                    android:layout_columnWeight="1"/>
-
-                                <include
-                                    android:id="@+id/item6"
-                                    layout="@layout/icon_label_item"
-                                    android:layout_columnWeight="1"/>
-
-                                <include
-                                    android:id="@+id/item7"
-                                    layout="@layout/icon_label_item"
-                                    android:layout_columnWeight="1"/>
-
-                                <include
-                                    android:id="@+id/item8"
-                                    layout="@layout/icon_label_item"
-                                    android:layout_columnWeight="1"/>
-                            </GridLayout>
-                        </androidx.cardview.widget.CardView>
-
-                        <!-- Utility Section -->
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="Utility"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
-
-                        <androidx.cardview.widget.CardView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:padding="12dp"
-                            app:cardCornerRadius="10dp"
-                            app:cardElevation="3dp">
-
-                            <GridLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:columnCount="4">
-
-                                <include
-                                    android:id="@+id/util1"
-                                    layout="@layout/icon_label_item"
-                                    android:layout_columnWeight="1"/>
-
-                                <include
-                                    android:id="@+id/util2"
-                                    layout="@layout/icon_label_item"
-                                    android:layout_columnWeight="1"/>
-
-                                <include
-                                    android:id="@+id/util3"
-                                    layout="@layout/icon_label_item"
-                                    android:layout_columnWeight="1"/>
-
-                                <include
-                                    android:id="@+id/util4"
-                                    layout="@layout/icon_label_item"
-                                    android:layout_columnWeight="1"/>
-
-                                <include
-                                    android:id="@+id/util5"
-                                    layout="@layout/icon_label_item"
-                                    android:layout_columnWeight="1"/>
-
-                                <include
-                                    android:id="@+id/util6"
-                                    layout="@layout/icon_label_item"
-                                    android:layout_columnWeight="1"/>
-                            </GridLayout>
-                        </androidx.cardview.widget.CardView>
-
-                        <!-- Travel Section -->
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="Travel Services"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
-
-                        <androidx.cardview.widget.CardView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:padding="12dp"
-                            app:cardCornerRadius="10dp"
-                            app:cardElevation="3dp">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:weightSum="4">
-
-                                <include
-                                    android:id="@+id/bus"
-                                    layout="@layout/icon_label_item"
-                                    android:layout_columnWeight="1"/>
-
-                                <include
-                                    android:id="@+id/train"
-                                    layout="@layout/icon_label_item"
-                                    android:layout_columnWeight="1"/>
-
-                                <include
-                                    android:id="@+id/flight"
-                                    layout="@layout/icon_label_item"
-                                    android:layout_columnWeight="1"/>
-
-                                <include
-                                    android:id="@+id/hotel"
-                                    layout="@layout/icon_label_item"
-                                    android:layout_columnWeight="1"/>
-                            </LinearLayout>
-                        </androidx.cardview.widget.CardView>
-                    </LinearLayout>
-                </LinearLayout>
-            </ScrollView>
-
-
-            <!-- ✅ Fixed Bottom Navigation -->
-            <com.google.android.material.bottomnavigation.BottomNavigationView
-                android:id="@+id/bottomnav"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_alignParentBottom="true"
-                android:background="@color/white"
-                app:itemIconTint="@color/black"
-                app:itemTextColor="@color/black"
-                app:itemRippleColor="@color/colorPrimary"
-                app:labelVisibilityMode="labeled"
-                app:itemHorizontalTranslationEnabled="false"
-                app:menu="@menu/bottom_nav_menu" />
-
-
-
-        </RelativeLayout>
     </LinearLayout>
 
     <!-- ✅ Drawer Menu -->
