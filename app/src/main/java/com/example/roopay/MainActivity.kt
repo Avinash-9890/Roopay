@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.razorpay.Checkout
@@ -45,6 +46,32 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
         btnDrawer.setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
         }
+        
+
+        val bottomnav = findViewById<BottomNavigationView>(R.id.bottomnav)
+        bottomnav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> {
+                    Toast.makeText(this, "Home Clicked", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                R.id.nav_wallet -> {
+                    Toast.makeText(this, "Search Clicked", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                R.id.nav_offers -> {
+                    Toast.makeText(this, "Profile Clicked", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                R.id.nav_profile -> {
+                    Toast.makeText(this, "History Clicked", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                else -> false
+            }
+        }
+
+
 
         // ✅ Header View - SharedPreferences se data set karo
         val headerView = navigationView.getHeaderView(0)
@@ -103,6 +130,7 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
         setupUtilityItems()
         setupTravelItems()
     }
+
 
     /** ✅ Custom Logout Dialog */
     @SuppressLint("MissingInflatedId")
