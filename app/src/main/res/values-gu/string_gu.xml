@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">રૂપે</string>
+    <string name="profile">પ્રોફાઇલ</string>
+    <string name="kyc">કેવાયસી</string>
+    <string name="support">સહાયતા</string>
+    <string name="setting">સેટિંગ</string>
+    <string name="my_language">મારી ભાષા</string>
+    <string name="terms_conditions">નિયમ અને શરતો</string>
+    <string name="biometric">બાયોમેટ્રિક</string>
+    <string name="privacy_policies">ગોપનીયતા નીતિ</string>
+    <string name="faq">વારંવાર પૂછાતા પ્રશ્નો</string>
+    <string name="share_refer">શેર / મિત્રને જણાવો</string>
+    <string name="logout">લોગઆઉટ</string>
+</resources>

@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">रूपे</string>
+    <string name="profile">प्रोफ़ाइल</string>
+    <string name="kyc">केवाईसी</string>
+    <string name="support">सहायता</string>
+    <string name="setting">सेटिंग</string>
+    <string name="my_language">मेरी भाषा</string>
+    <string name="terms_conditions">नियम व शर्तें</string>
+    <string name="biometric">बायोमेट्रिक</string>
+    <string name="privacy_policies">गोपनीयता नीति</string>
+    <string name="faq">सामान्य प्रश्न</string>
+    <string name="share_refer">शेयर / मित्र को बताएं</string>
+    <string name="logout">लॉगआउट</string>
+</resources>

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -85,15 +86,24 @@ class SigninActivity : AppCompatActivity() {
             }
         )
 
-        val promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Login with Biometrics")
-            .setSubtitle("Use your fingerprint or face")
-            // ✅ Face + Fingerprint + PIN/Pattern/Password allow karo
-            .setAllowedAuthenticators(
-                BiometricManager.Authenticators.BIOMETRIC_STRONG
-                        or BiometricManager.Authenticators.DEVICE_CREDENTIAL
-            )
-            .build()
+        val promptInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // ✅ Android 11+ (API 30 and above)
+            BiometricPrompt.PromptInfo.Builder()
+                .setTitle("Login")
+                .setSubtitle("Authenticate with biometrics or device credential")
+                .setAllowedAuthenticators(
+                    BiometricManager.Authenticators.BIOMETRIC_STRONG or
+                            BiometricManager.Authenticators.DEVICE_CREDENTIAL
+                )
+                .build()
+        } else {
+            // ✅ Android 9 & 10 (API 28 & 29) → DEVICE_CREDENTIAL not supported
+            BiometricPrompt.PromptInfo.Builder()
+                .setTitle("Login")
+                .setSubtitle("Authenticate using fingerprint")
+                .setNegativeButtonText("Cancel") // required before API 30
+                .build()
+        }
 
         biometricPrompt.authenticate(promptInfo)
     }
