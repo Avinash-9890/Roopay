@@ -3,8 +3,6 @@ package com.example.roopay
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.InputType
 import android.util.Log
 import android.view.Menu
@@ -16,23 +14,22 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
-import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.razorpay.Checkout
 import com.razorpay.PaymentResultListener
-import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
 import org.json.JSONObject
 import androidx.appcompat.widget.Toolbar
-
+import androidx.biometric.BiometricManager
+import android.provider.Settings
+import android.view.View
+import retrofit2.Retrofit
+import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator // (if you use it elsewhere)
 
 class MainActivity : AppCompatActivity(), PaymentResultListener {
 
     private lateinit var drawerLayout: DrawerLayout
-    private lateinit var bannerViewPager: ViewPager2
-    private val handler = Handler(Looper.getMainLooper())
-    private lateinit var runnable: Runnable
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,10 +37,10 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-        // ✅ Preload Razorpay
+        // Razorpay preload
         Checkout.preload(applicationContext)
 
-        // ✅ Drawer setup
+        // Drawer + navigation view
         drawerLayout = findViewById(R.id.drawerLayout)
         val navigationView = findViewById<NavigationView>(R.id.navigationView)
         val btnDrawer = findViewById<ImageButton>(R.id.btn1)
@@ -52,16 +49,15 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
             drawerLayout.openDrawer(GravityCompat.START)
         }
 
-        // ✅ Bottom Navigation with Fragments
+        // Toolbar + bottom nav
         val bottomnav = findViewById<BottomNavigationView>(R.id.bottomnav)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-
-
+        // Default fragment
         if (savedInstanceState == null) {
-            loadFragment(HomeFragment()) // Default fragment = Home
+            loadFragment(HomeFragment())
         }
 
         bottomnav.setOnItemSelectedListener { item ->
@@ -86,9 +82,58 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
             }
         }
 
+        // --- Biometric Switch in Drawer (safe handling) ---
+        try {
+            val menuItem = navigationView.menu.findItem(R.id.nav_biometric)
+            val actionV: View? = menuItem.actionView
+            val switchBiometric: Switch? = actionV?.findViewById(R.id.switchBiometric)
 
+            if (switchBiometric == null) {
+                Log.w("MainActivity", "Biometric switch view is null. Make sure menu item has actionLayout set.")
+            } else {
+                val prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+                // set initial state first (before listener)
+                switchBiometric.isChecked = prefs.getBoolean("useBiometric", false)
 
-        // ✅ Header data in drawer
+                switchBiometric.setOnCheckedChangeListener { _, isChecked ->
+                    if (isChecked) {
+                        val biometricManager = BiometricManager.from(this)
+                        when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
+                            BiometricManager.BIOMETRIC_SUCCESS -> {
+                                prefs.edit().putBoolean("useBiometric", true).apply()
+                                Toast.makeText(this, "Biometric enabled", Toast.LENGTH_SHORT).show()
+                            }
+                            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
+                                Toast.makeText(this, "Please set up biometric in settings", Toast.LENGTH_LONG).show()
+                                // Open biometric enroll screen
+                                val enrollIntent = Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
+                                    putExtra(
+                                        Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
+                                        BiometricManager.Authenticators.BIOMETRIC_STRONG
+                                    )
+                                }
+                                startActivity(enrollIntent)
+                                // keep switch off until user actually enrolls
+                                switchBiometric.isChecked = false
+                            }
+                            else -> {
+                                Toast.makeText(this, "Biometric not supported on this device", Toast.LENGTH_SHORT).show()
+                                switchBiometric.isChecked = false
+                            }
+                        }
+                    } else {
+                        // turned off
+                        getSharedPreferences("MyPrefs", MODE_PRIVATE).edit()
+                            .putBoolean("useBiometric", false).apply()
+                        Toast.makeText(this, "Biometric disabled", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("MainActivity", "Error setting up biometric switch: ${e.localizedMessage}", e)
+        }
+
+        // Drawer header (username/mobile)
         val headerView = navigationView.getHeaderView(0)
         val tvUserName = headerView.findViewById<TextView>(R.id.username)
         val tvMobileNumber = headerView.findViewById<TextView>(R.id.usermobile)
@@ -100,7 +145,7 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
         tvUserName.text = savedName
         tvMobileNumber.text = savedMobile
 
-        // ✅ Drawer item clicks
+        // Drawer item clicks
         navigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.logout -> {
@@ -108,19 +153,20 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
                     drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }
-                else -> false
+                else -> {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
             }
         }
-
     }
 
-    /** ✅ Fragment Loader */
+    /** Fragment loader utility */
     private fun loadFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, fragment)
             .commit()
     }
-
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.toolbar_menu, menu)
@@ -141,7 +187,7 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
         }
     }
 
-    /** ✅ Logout */
+    /** Logout dialog */
     private fun showLogoutDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialoge_logout, null)
         val dialog = AlertDialog.Builder(this)
@@ -160,6 +206,7 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
     }
 
     private fun logoutUser() {
+        // clear shared prefs (be careful: you might want to keep some data)
         val sharedPref = getSharedPreferences("UserData", MODE_PRIVATE)
         sharedPref.edit().clear().apply()
 
@@ -170,6 +217,8 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
         startActivity(intent)
         finish()
     }
+
+    /** Razorpay helpers (unchanged) */
     fun openPaymentDialog() {
         showAmountDialogAndPay()
     }
@@ -178,8 +227,6 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
         startRazorpayPayment(amount)
     }
 
-
-    /** ✅ Razorpay Payment */
     private fun showAmountDialogAndPay() {
         val input = EditText(this)
         input.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
@@ -202,6 +249,7 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
 
     private fun startRazorpayPayment(amountInRupees: Double) {
         val checkout = Checkout()
+        // Use your actual key (don't expose production key in client in real app)
         checkout.setKeyID("rzp_test_RNH706CURjoNRd")
         val amountInPaise = (amountInRupees * 100).toInt()
 
@@ -223,7 +271,6 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
         }
     }
 
-    /** ✅ Razorpay Callbacks */
     override fun onPaymentSuccess(razorpayPaymentID: String?) {
         AlertDialog.Builder(this)
             .setTitle("Payment Successful ✅")
@@ -242,17 +289,10 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
 
     override fun onDestroy() {
         super.onDestroy()
-        handler.removeCallbacks(runnable)
+        // nothing to remove here (banner runnable lives inside HomeFragment)
     }
 
-
-
-    fun openActivationDialoge(){
-        showActivationDialog()
-    }
-
-    /** ✅ Show Dialog for Activation API */
-    @SuppressLint("MissingInflatedId")
+    // Activation dialog and API call (kept same as your earlier code)
     private fun showActivationDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_activation, null)
 
@@ -280,8 +320,6 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
             .show()
     }
 
-
-        /** ✅ Call Activation API with user input */
     private fun callActivationApi(memberId: String, apiPassword: String, apiPin: String, number: String) {
         val requestData = ModelClass(memberId, apiPassword, apiPin, number)
 
