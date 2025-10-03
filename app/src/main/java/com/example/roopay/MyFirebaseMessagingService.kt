@@ -36,6 +36,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
+
         // Oreo+ ke liye Notification channel
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -52,5 +53,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         // Token ko SharedPreferences me save karo
         val prefs = getSharedPreferences("UserData", Context.MODE_PRIVATE)
         prefs.edit().putString("fcm_token", token).apply()
+
+        
     }
 }
