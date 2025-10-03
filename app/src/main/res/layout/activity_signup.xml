@@ -128,5 +128,18 @@
             android:textColor="#FAF3F3"
             android:text="Sign Up" />
 
+        <!-- ✅ Already have an account -->
+        <TextView
+            android:id="@+id/txtSignin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Already have an account? Sign In"
+            android:textColor="@color/colorPrimary"
+            android:textSize="14sp"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center"
+            android:clickable="true"
+            android:focusable="true"/>
+
     </LinearLayout>
 </ScrollView>

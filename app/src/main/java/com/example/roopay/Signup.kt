@@ -55,6 +55,12 @@ class SignupActivity : AppCompatActivity() {
             registerUser()
         }
 
+        val txtSignin = findViewById<TextView>(R.id.txtSignin)
+        txtSignin.setOnClickListener {
+            startActivity(Intent(this, SigninActivity::class.java))
+        }
+
+
         setupLocationUpdates()
         checkLocationPermissionAndStart()
     }
@@ -244,6 +250,8 @@ class SignupActivity : AppCompatActivity() {
                 Toast.makeText(this, "❌ Signup failed: ${e.message}", Toast.LENGTH_LONG).show()
             }
     }
+
+
 
     private fun saveUserToFirestore(
         userId: String,

@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
@@ -66,20 +67,29 @@ class HomeFragment : Fragment() {
 
     private fun setupTopSection(root: View) {
         val itemTopup = root.findViewById<View>(R.id.itemTopup)
-        itemTopup.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.topup)
-        itemTopup.findViewById<TextView>(R.id.iconLabel).text = "Topup"
+        val topupLabel = itemTopup.findViewById<TextView>(R.id.iconLabel)
+        itemTopup.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.topupp)
+        topupLabel.text = "Topup"
+        topupLabel.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
 
         val itemPayout = root.findViewById<View>(R.id.itemPayout)
-        itemPayout.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.pay)
-        itemPayout.findViewById<TextView>(R.id.iconLabel).text = "Payout"
+        val payoutLabel = itemPayout.findViewById<TextView>(R.id.iconLabel)
+        itemPayout.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.payy)
+        payoutLabel.text = "Payout"
+        payoutLabel.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
 
         val itemQr = root.findViewById<View>(R.id.itemQr)
-        itemQr.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.myqrcode)
-        itemQr.findViewById<TextView>(R.id.iconLabel).text = "QR"
+        val qrLabel = itemQr.findViewById<TextView>(R.id.iconLabel)
+        itemQr.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.qrr)
+        qrLabel.text = "QR"
+        qrLabel.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
 
         val itemActivate = root.findViewById<View>(R.id.itemActivate)
-        itemActivate.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.activate)
-        itemActivate.findViewById<TextView>(R.id.iconLabel).text = "Activate"
+        val activateLabel = itemActivate.findViewById<TextView>(R.id.iconLabel)
+        itemActivate.findViewById<ImageView>(R.id.iconImage).setImageResource(R.drawable.activatee)
+        activateLabel.text = "Activate"
+        activateLabel.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+
 
         // ✅ Razorpay Payment on Payout Click
         itemPayout.setOnClickListener {

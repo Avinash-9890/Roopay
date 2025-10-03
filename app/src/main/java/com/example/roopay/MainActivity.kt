@@ -24,6 +24,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.biometric.BiometricManager
 import android.provider.Settings
 import android.view.View
+import com.google.firebase.messaging.FirebaseMessaging
 import retrofit2.Retrofit
 import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator // (if you use it elsewhere)
 
@@ -50,6 +51,16 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
         btnDrawer.setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
         }
+
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val token = task.result
+                Toast.makeText(this, "FCM Token: $token", Toast.LENGTH_LONG).show()
+                // Token ko server pe bhej sakte ho
+            }
+        }
+
 
         // Toolbar + bottom nav
         val bottomnav = findViewById<BottomNavigationView>(R.id.bottomnav)

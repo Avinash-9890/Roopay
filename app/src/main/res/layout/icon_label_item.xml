@@ -23,5 +23,5 @@
         android:layout_marginTop="4dp"
         android:text="Label"
         android:textSize="12sp"
-        android:textColor="#000"/>
+        android:textColor="@color/black"/>
 </LinearLayout>
