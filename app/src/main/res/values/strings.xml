@@ -1,9 +1,14 @@
 <resources>
     <string name="app_name">Roopay</string>
-
-    <string name="icon">Topup</string>
-
-    <string name="razorpay_key">rzp_test_RNH706CURjoNRd,YnqxM228gvy8BCs7KiVmGQnM</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="profile">Profile</string>
+    <string name="kyc">KYC</string>
+    <string name="support">Support</string>
+    <string name="setting">Setting</string>
+    <string name="my_language">My Language</string>
+    <string name="terms_conditions">Terms &amp; Conditions</string>
+    <string name="biometric">Biometric</string>
+    <string name="privacy_policies">Privacy Policy</string>
+    <string name="faq">FAQ</string>
+    <string name="share_refer">Share / Refer a Friend</string>
+    <string name="logout">Logout</string>
 </resources>
