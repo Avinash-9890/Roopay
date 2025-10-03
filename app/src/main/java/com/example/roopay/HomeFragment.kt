@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
@@ -88,11 +89,27 @@ class HomeFragment : Fragment() {
 
 
         // ✅ API call for Activation
-        itemActivate.setOnClickListener {
+        itemTopup.setOnClickListener {
             val intent = Intent(requireContext(), ActivationActivity::class.java)
             startActivity(intent)
 
 
+        }
+
+        // ✅ Activate button click
+        itemQr.setOnClickListener {
+            val prefs = requireContext().getSharedPreferences("UserData", AppCompatActivity.MODE_PRIVATE)
+            val upi = prefs.getString("upi", null)
+
+            if (upi.isNullOrEmpty()) {
+                // अगर UPI नहीं है → पहले ProfileActivity खोलो
+                val intent = Intent(requireContext(), ProfileActivity::class.java)
+                startActivity(intent)
+            } else {
+                // अगर पहले से UPI है → सीधा MyQrActivity खोलो
+                val intent = Intent(requireContext(), MyQrActivity::class.java)
+                startActivity(intent)
+            }
         }
 
 

@@ -80,6 +80,10 @@ dependencies {
     implementation("com.razorpay:checkout:1.6.40")
 
     implementation("androidx.biometric:biometric:1.2.0-alpha05")
+
+    // ZXing for QR gen + scanner
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation("com.google.zxing:core:3.4.1")
     }
 
 

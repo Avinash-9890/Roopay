@@ -45,6 +45,8 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
         val navigationView = findViewById<NavigationView>(R.id.navigationView)
         val btnDrawer = findViewById<ImageButton>(R.id.btn1)
 
+
+
         btnDrawer.setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
         }
@@ -70,6 +72,13 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
                     loadFragment(SearchFragment())
                     true
                 }
+                R.id.nav_scan -> {
+                    // ✅ यहां अब scanner खोलना है, QR दिखाना नहीं
+                    val intent = Intent(this, ScanActivity::class.java)
+                    startActivity(intent)
+                    false   // return false ताकि nav item select न हो
+                }
+
                 R.id.nav_offers -> {
                     loadFragment(PersonFragments())
                     true
