@@ -1,28 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:padding="16dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="24dp"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/ivQr"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_gravity="center"
-        android:contentDescription="User QR" />
-
-    <Button
-        android:id="@+id/btnShareQr"
+    <!-- User QR Code -->
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="24dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="6dp"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/ivQr"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:scaleType="fitCenter"
+            android:contentDescription="User QR" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Share QR -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnShareQr"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Share QR"
-        android:layout_marginTop="16dp" />
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        app:cornerRadius="12dp"
+        app:icon="@android:drawable/ic_menu_share"
+        app:iconTint="@android:color/white"
+        app:iconGravity="textStart"
+        android:layout_marginBottom="12dp"
+        style="@style/Widget.MaterialComponents.Button"
+        android:backgroundTint="@color/colorPrimary"/>
 
-    <Button
+    <!-- Edit Profile -->
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnEditProfile"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Edit Profile"
-        android:layout_marginTop="8dp" />
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        app:cornerRadius="12dp"
+        app:icon="@android:drawable/ic_menu_edit"
+        app:iconTint="@android:color/white"
+        app:iconGravity="textStart"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:strokeColor="@color/colorPrimary"
+        android:textColor="@color/colorPrimary"/>
 </LinearLayout>
